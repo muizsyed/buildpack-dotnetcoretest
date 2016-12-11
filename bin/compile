@@ -13,14 +13,7 @@ CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
-# down here is workind dotnet core release url
-# 1.0.0-preview2-003131 < latest working
-# 1.0.0-preview4-004107 < latest
-# 1.0.0-preview2-1-003177 - trial
-# latest < default
-# now using - latest
-
-# export all vars
+# export all vars - required to parameterise
 if [ -d "$ENV_DIR" ]; then
 	for e in $(ls $ENV_DIR); do
 		echo "Env var:"
@@ -29,15 +22,13 @@ if [ -d "$ENV_DIR" ]; then
 	done;
 fi
 
-echo ".NET Version:"
+# if dotnet version is not set, use the one we know about
 if [ -z ${DOTNET_VERSION+x} ]; then
 	export DOTNET_VERSION="1.0.0-preview2-1-003177";
 fi
 
+echo ".NET version:"
 echo $DOTNET_VERSION
-
-echo "Project to publish"
-echo $PROJECT_NAME
 
 NODE_VERSION="6.9.1"
 
@@ -60,11 +51,22 @@ cd $BUILD_DIR
 dotnet restore
 
 echo "publish"
-PROJECT_FILE=$(find ${BUILD_DIR} -maxdepth 5 -iname project.json | tail -2 | head -1)
-echo $PROJECT_FILE
 
+if [ -z ${PROJECT_NAME+x} ]; then
+
+PROJECT_FILE=$(find ${BUILD_DIR} -maxdepth 5 -iname project.json | head -1)
 PROJECT_NAME=$(basename $(dirname $PROJECT_FILE))
 
+else
+
+PROJECT_FILE=$(find ${BUILD_DIR} -maxdepth 5 -iname project.json | grep $PROJECT_NAME | head -1)
+
+fi
+
+echo "Using project file"
+echo $PROJECT_FILE
+
+echo "Using project name"
 echo $PROJECT_NAME
 
 dotnet publish $PROJECT_FILE --output ${BUILD_DIR}/heroku_output --configuration Release
