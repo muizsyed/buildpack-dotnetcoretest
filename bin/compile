@@ -20,6 +20,16 @@ BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 # latest < default
 # now using - latest
 
+echo $ENV_DIR
+
+if [ -d "$ENV_DIR" ]; then
+	for e in $(ls $ENV_DIR); do
+		echo "Env var:"
+		echo $e
+	done;
+fi
+
+
 echo ".NET Version:"
 echo $DOTNET_VERSION
 echo "Project to publish"
