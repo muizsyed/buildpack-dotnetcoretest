@@ -59,14 +59,14 @@ PROJECT_NAME=$(basename $(dirname $PROJECT_FILE))
 
 else
 
-PROJECT_FILE=$(find ${BUILD_DIR} -maxdepth 5 -iname project.json | grep $PROJECT_NAME | head -1)
+PROJECT_FILE=$(find ${BUILD_DIR} -maxdepth 5 -iname project.json | grep "${PROJECT_NAME}/" | head -1)
 
 fi
 
-echo "Using project file"
+echo "Using project file:"
 echo $PROJECT_FILE
 
-echo "Using project name"
+echo "Using project name:"
 echo $PROJECT_NAME
 
 dotnet publish $PROJECT_FILE --output ${BUILD_DIR}/heroku_output --configuration Release
